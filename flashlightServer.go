@@ -2,7 +2,6 @@ package main
 
 import (
 	"flash2/app/controller"
-	"flash2/app/middleware"
 	"net/http"
 )
 
@@ -19,7 +18,6 @@ func main() {
 	// fileserver path mapping
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.Handle("/files/", http.StripPrefix("/files", http.FileServer(http.Dir("."))))
-
 
 	server := http.Server{Addr: ":8080"} // ip set to default. only port is needed
 
