@@ -1,0 +1,18 @@
+.btn {
+    background-color:  #f6b92b;
+    color: #ffffff;
+}
+
+.btn:hover {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.btn:focus, .btn.focus {
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(246, 185, 43, 0.35);
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(246, 185, 43, 0.35);
+}
