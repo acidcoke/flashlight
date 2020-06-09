@@ -19,7 +19,5 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.Handle("/files/", http.StripPrefix("/files", http.FileServer(http.Dir("."))))
 
-	server := http.Server{Addr: ":8080"} // ip set to default. only port is needed
-
-	server.ListenAndServe()
+	http.ListenAndServe(":80", nil)
 }
