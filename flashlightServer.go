@@ -15,6 +15,15 @@ func main() {
 	http.HandleFunc("/upload", controller.Upload)
 	http.HandleFunc("/registration", controller.Registration)
 
+	http.HandleFunc("/add-user", controller.AddUser)
+	http.HandleFunc("/authenticate-user", controller.AuthenticateUser)
+	http.HandleFunc("/add-post", controller.AddPost)
+	http.HandleFunc("/like-post", controller.LikePost)
+	http.HandleFunc("/delete-post", controller.DeletePost)
+	http.HandleFunc("/add-comment", controller.AddComment)
+	http.HandleFunc("/delete-comment", controller.DeleteComment)
+	http.HandleFunc("/logout", controller.Logout)
+
 	// fileserver path mapping
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.Handle("/files/", http.StripPrefix("/files", http.FileServer(http.Dir("."))))
