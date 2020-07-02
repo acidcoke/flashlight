@@ -1,7 +1,7 @@
 package main
 
 import (
-	"flash2/app/controller"
+	"flashlight/app/controller"
 	"net/http"
 )
 

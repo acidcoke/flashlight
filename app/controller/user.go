@@ -1,6 +1,9 @@
 package controller
 
-import "net/http"
+import (
+	"flashlight/app/model"
+	"net/http"
+)
 
 func AuthenticateUser(w http.ResponseWriter, r *http.Request) {
 }
