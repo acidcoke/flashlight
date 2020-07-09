@@ -18,18 +18,17 @@
         </div>
     </nav>
     <div class="container" style="max-width: 576px;">
-        <form>
-            <h3 style="color: #000000"><b>mustermax123</b></h3>
+        <form action="/add-post" method="POST" enctype="multipart/form-data">
+            <h3 style="color: #000000"><b>{{.Username}}</b></h3>
             <h6>Hier kannst du ein neues Bild hochladen</h6>
             <div class="form-group">
-                <form>
-                    <div class="form-group">
-                        <input type="file" class="form-control-file" id="exampleFormControlFile1">
-                    </div>
-                </form>
-                <textarea class="form-control" rows="3" id="description" placeholder="Beschreibung" style="border-color: #f6b92b"></textarea>
+                <div class="form-group">
+                    <input type="file" class="form-control-file" id="exampleFormControlFile1" name="datei">
+                </div>
+                <textarea class="form-control" rows="3" id="description" name="caption" placeholder="Beschreibung" style="border-color: #f6b92b"></textarea>
             </div>
-            <button type="button" class="btn" id="upload">
+
+            <button type="submit" class="btn btn-warning">
                 Hochladen
             </button>
         </form>

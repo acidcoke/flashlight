@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>{{.PageTitle}}</title>
+    <title>A</title>
     <link rel="shortcut icon" type="image/x-icon" href="./static/img/favicon.ico">
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="./static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </head>
 <body style="padding-top: 75px;">
     <nav class="navbar navbar-default fixed-top" style="background-color:  #f6b92b;">
@@ -23,36 +26,51 @@
         <div class="row">
             <div class="col-6">
                 <a href="login">
-                    <button type="button" class="btn" style="width: 100%">
+                    <button type="button" class="btn btn-warning" style="width: 100%">
                         Login
                     </button>
                 </a>
             </div>
             <div class="col-6">
                 <a href="registration">
-                    <button type="button" class="btn" style="width: 100%">
+                    <button type="button" class="btn btn-warning" style="width: 100%">
                         Register
                     </button>
                 </a>
             </div>
         </div>
-        <div class="card" style="width: 100%; margin-top: 15px">
-            <div class="card-body">
-                <h5 class="card-title">Oliver Hinzmann</h5>
-                <h6 class="card-subtitle mb-2 text-muted">23.07.2020 - 13:40 Uhr</h6>
+
+        {{range .Flashlights}}
+            <div class="card" style="width: 100%; margin-top: 15px">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-10">
+                            <h5 class="card-title">{{.Author}}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{.Timestamp}}</h6>
+                        </div>
+                    </div>
+                </div>
+                <img src="{{.FilePath}}" class="card-img-top" alt="..." style="width: 100%; ">
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            {{if gt .LikeAmount 1}}
+                                <b>Gefällt {{.LikeAmount}} Leuten</b>
+                            {{else}}
+                                <b>Gefällt 1 Person</b>
+                            {{end}}
+                            <p><br>{{.Caption}}
+                            </p>
+                        </li>
+                        {{range .Comments}}
+                            <li class="list-group-item"><b>{{.Author}}</b>{{.Text}}</li>
+                        {{end}}
+                    </ul>
+                </div>
             </div>
-                <img src="static/img/images.jpg" class="card-img-top" alt="..." style="width: 100%; ">
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <b>Gefällt 3 Leuten</b>
-                        <p><br>Beispieltext
-                        </p>
-                    </li>
-                    <li class="list-group-item"><b>ph1337 </b>Ich bin kein Kommentar, ich putze hier nur</li>
-                </ul>
-            </div>
-        </div>
+        {{end}}
+
     </div>
+
 </body>
 </html>

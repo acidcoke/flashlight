@@ -21,60 +21,36 @@
 </nav>
 <div class="container-fluid" style="max-width: 576px;">
     <div class="row">
-        <div class="col-6">
-            <div class="card" style="width: 100%; margin-top: 15px">
-                <div class="card-body">
-                    <h6 class=" mb-2 text-center text-muted">23.07.2020 - 13:40 Uhr</h6>
-                </div>
-                <img src="img/images.jpg" class="card-img-top" alt="..." style="width: 100%; ">
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <div class="row">
-                                <div class="col-6">
-                                    <i class="fa fa-heart" aria-hidden="true" style="color: #f6b92b"> </i>
-                                    <b> 12</b>
+        {{range .Flashlights}}
+            <div class="col-6">
+                <div class="card" style="width: 100%; margin-top: 15px">
+                    <div class="card-body">
+                        <h6 class=" mb-2 text-center text-muted">{{.Timestamp}}</h6>
+                    </div>
+                    <img src="{{.FilePath}}" class="card-img-top" alt="..." style="width: 100%; ">
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <i class="fa fa-heart" aria-hidden="true" style="color: #f6b92b"> </i>
+                                        <b> {{.LikeAmount}}</b>
+                                    </div>
+                                    <div class="col-6">
+                                        <i class="fa fa-comment" aria-hidden="true" style="color: #f6b92b"> </i><b> {{ len .Comments }}</b>
+                                    </div>
                                 </div>
-                                <div class="col-6">
-                                    <i class="fa fa-comment" aria-hidden="true" style="color: #f6b92b"> </i><b> 12</b>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="list-group-item"><button type="button" class="btn" style="width: 100%; color:#f6b92b; border-color: #f6b92b; background-color: white">
-                                <i class="fa fa-trash" aria-hidden="true"></i>
-                                Löschen
-                            </button></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="col-6">
-            <div class="card" style="width: 100%; margin-top: 15px">
-                <div class="card-body">
-                    <h6 class=" mb-2 text-center text-muted">23.07.2020 - 13:40 Uhr</h6>
-                </div>
-                <img src="img/images.jpg" class="card-img-top" alt="..." style="width: 100%; ">
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <div class="row">
-                                <div class="col-6">
-                                    <i class="fa fa-heart" aria-hidden="true" style="color: #f6b92b"> </i>
-                                    <b> 12</b>
-                                </div>
-                                <div class="col-6">
-                                    <i class="fa fa-comment" aria-hidden="true" style="color: #f6b92b"> </i><b> 12</b>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="list-group-item"><button type="button" class="btn" style="width: 100%; background-color: white; color: #f6b92b; border-color: #f6b92b">
-                                <i class="fa fa-trash" aria-hidden="true"></i>
-                                Löschen
-                            </button></li>
-                    </ul>
+                            </li>
+                            <li class="list-group-item"><button formaction="/delete-post/" formmethod="post" type="submit" class="btn btn-warning" style="width: 100%; color:#f6b92b; border-color: #f6b92b; background-color: white">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                    Löschen
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
+        {{end}}
     </div>
 </div>
 </body>
