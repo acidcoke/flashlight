@@ -15,7 +15,7 @@ func main() {
 	http.HandleFunc("/upload", controller.Auth(controller.Upload))
 	http.HandleFunc("/registration", controller.Registration)
 
-	http.HandleFunc("/add-user", controller.Auth(controller.AddUser))
+	http.HandleFunc("/add-user", controller.AddUser)
 	http.HandleFunc("/authenticate-user", controller.AuthenticateUser)
 	http.HandleFunc("/add-post", controller.Auth(controller.AddPost))
 	http.HandleFunc("/like-post", controller.Auth(controller.LikePost))
