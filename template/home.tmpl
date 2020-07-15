@@ -4,101 +4,115 @@
     <meta charset="UTF-8">
 
     <title>Flashlight</title>
-    <link rel="shortcut icon" type="image/x-icon" href="static/img/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/static/img/favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body style="padding-top: 75px;">
-<nav class="navbar navbar-default fixed-top" style="background-color:  #f6b92b;">
-    <div class="container justify-content-center">
-        <div class="navbar-header">
-            <a class="navbar-brand" href=".">
-                <img src="static/img/flashlight_logo_white.svg" alt="Logo" style="width:200px;">
-            </a>
+    <nav class="navbar navbar-default fixed-top" style="background-color:  #f6b92b;">
+        <div class="container justify-content-center">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="home">
+                    <img src="/static/img/flashlight_logo_white.svg" alt="Logo" style="width:200px;">
+                </a>
+            </div>
         </div>
-    </div>
-</nav>
-<div class="container-fluid" style="max-width: 576px;">
-    <div class="row ">
-        <div class="col-5">
-            <div class="row float-left">
-                <div class="col-6">
+    </nav>
+    <div class="container-fluid" style="max-width: 576px;">
+        <div class="row ">
+            <div class="col-5">
+                <div class="row float-left">
+                    <div class="col-6">
                         <h3 style="color: #000000"><b>{{.Username}}</b></h3>
-
-                    <a href="/">
-                        <h6 style="color: #f6b92b">Logout</h6>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-5">
-            <a href="mypictures">
-                <button type="button" class="btn btn-warning container-fluid">
-                    Meine Bilder
-                </button>
-            </a>
-        </div>
-        <div class="col-sm-2">
-            <a href="upload">
-                <button type="button" class="btn btn-warning container-fluid float-right">
-                    +
-                </button>
-            </a>
-        </div>
-    </div>
-
-    {{range .Flashlights}}
-        <div class="card" style="width: 100%; margin-top: 15px">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-10">
-                        <h5 class="card-title">{{.Author}}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">{{.Timestamp}}</h6>
-                    </div>
-                    <div class="col-2">
-                        <button type="button" class="btn btn-like" data-toggle="button" autocomplete="off"><i class="fa fa-heart"></i></button>
+                        <a href="/">
+                            <h6 style="color: #f6b92b">Logout</h6>
+                        </a>
                     </div>
                 </div>
             </div>
-            <img src="{{.FilePath}}" class="card-img-top" alt="..." style="width: 100%; ">
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        {{if gt .LikeAmount 1}}
-                            <b>Gefällt {{.LikeAmount}} Leuten</b>
-                        {{else}}
-                            <b>Gefällt 1 Person</b>
-                        {{end}}
-                        <p><br>{{.Caption}}
-                        </p>
-                    </li>
-                    {{range .Comments}}
-                        <li class="list-group-item"><b>{{.Author}}</b>{{.Text}}</li>
-                    {{end}}
-                    <li class="list-group-item">
+            <div class="col-sm-5">
+                <a href="mypictures">
+                    <button type="button" class="btn btn-warning container-fluid">
+                        Meine Bilder
+                    </button>
+                </a>
+            </div>
+            <div class="col-sm-2">
+                <a href="upload">
+                    <button type="button" class="btn btn-warning container-fluid float-right">
+                        +
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        {{range .Flashlights}}
+            <div class="card" style="width: 100%; margin-top: 15px">
+                {{$id := .ID}}
+                    <div class="card-body">
                         <div class="row">
-                            <form action="/add-comment" method="post" >
-                                <div class="col-9">
-                                    <input type="text" class="form-control" placeholder="Kommentieren" id="comment" name="comment">
-                                    <input type="text" class="form-control invisible" placeholder="Kommentieren" id="test" name="test" value="{{.ID}}" >
-                                </div>
-                                <div class="col-3">
-                                    <button type="submit" class="btn" style="background-color: lightgray; color: black; width: 100%">
-                                        <i class="fa fa-paper-plane" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </form>
+                            <div class="col-10">
+                                <h5 class="card-title">{{.Author}}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{.Timestamp}}</h6>
+                            </div>
+                            <div class="col-2">
+                                {{if .IsLiked}}
+                                    <form action="/dislike-post" method="post">
+                                        <input type="hidden" class="invisible" id="fid" name="fid" value="{{$id}}">
+                                        <button type="submit" class="btn btn-dislike" id="like">
+                                            <i class="fa fa-heart"></i>
+                                        </button>
+                                    </form>
+                                {{else}}
+                                    <form action="/like-post" method="post">
+                                        <input type="hidden" class="invisible" id="fid" name="fid" value="{{$id}}">
+                                        <button type="submit" class="btn btn-like" id="like">
+                                            <i class="fa fa-heart"></i>
+                                        </button>
+                                    </form>
+                                {{end}}
+                            </div>
                         </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    {{end}}
+                    </div>
+                    <img src="{{.FilePath}}" class="card-img-top" alt="..." style="width: 100%; ">
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                {{if gt .LikeAmount 1}}
+                                    <b>Gefällt {{.LikeAmount}} Leuten</b>
+                                {{else if eq .LikeAmount 1}}
+                                    <b>Gefällt Jemandem</b>
+                                {{else if eq .LikeAmount 0}}
+                                    <b>Gefällt Keinem</b>
+                                {{end}}
+                                <p><br>{{.Caption}}
+                                </p>
+                            </li>
+                            {{range .Comments}}
+                                <li class="list-group-item"><b style="margin-right: 2%">{{.Author}}</b>{{.Text}}</li>
+                            {{end}}
+                            <li class="list-group-item">
+                                <form action="/add-comment" method="POST">
+                                    <div class="row">
+                                        <div class="col-9">
+                                            <input type="hidden" class="invisible" id="fid" name="fid" value="{{$id}}">
+                                            <input type="text" class="form-control" placeholder="Kommentieren" id="comment" name="comment">
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="submit" class="btn btn-warning" style="background-color: lightgray; color: black; width: 100%">
+                                                <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+        {{end}}
 
-</div>
-
-
+    </div>
 
 <script src="/static/js/jquery-3.3.1.slim.min.js"></script>
 <script src="/static/js/popper.min.js"></script>

@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/leesper/couchdb-golang"
-	"time"
+	"runtime"
+	"strings"
 )
 
 type Flashlight struct {
@@ -13,10 +14,11 @@ type Flashlight struct {
 	Type       string    `json:"type"`
 	FilePath   string    `json:"file_path"`
 	Author     string    `json:"author"`
-	Timestamp  time.Time `json:"timestamp"`
+	Timestamp  string `json:"timestamp"`
 	LikeAmount int       `json:"like_amount"`
 	Caption    string    `json:"caption"`
 	Comments   []Comment
+	IsLiked		int
 }
 
 type Comment struct {
@@ -27,6 +29,15 @@ type Comment struct {
 	Text         string `json:"text"`
 	FlashlightId string `json:"flashlight_id"`
 }
+
+type Like struct {
+	ID         		string  `json:"_id"`
+	Rev        		string  `json:"_rev"`
+	Type       		string  `json:"type"`
+	FlashlightId 	string	`json:"flashlight_id"`
+	Username 		string 	`json:"username"`
+}
+
 
 var flashlightDb *couchdb.Database
 
@@ -44,7 +55,7 @@ func (f Flashlight) Add() error {
 	delete(flashlight, "_rev")
 	_, _, err := flashlightDb.Save(flashlight, nil)
 	if err != nil {
-		fmt.Printf("[Add] error: %s", err)
+		printError(err)
 	}
 	return err
 }
@@ -56,15 +67,134 @@ func AddComment(c Comment) (err error) {
 	_, _, err = flashlightDb.Save(comment, nil)
 
 	if err != nil {
-		fmt.Printf("[AddComment] error: %s", err)
+		printError(err)
 	}
 	return err
 }
 
-func (c Comment) DeleteComment() (err error) {
-	err = flashlightDb.Delete(c.ID)
+func AddLike(like Like) (err error) {
+	dbLike, _ := GetLike(like.Username, like.FlashlightId)
+	if dbLike.Username == "" {
+		likeMap, _ := like2Map(like)
+		delete(likeMap, "_id")
+		delete(likeMap, "_rev")
+
+		_, _, err = flashlightDb.Save(likeMap, nil)
+		if err != nil {
+			printError(err)
+		}
+	} else {
+		_ = DeleteLike(dbLike.ID)
+	}
+	return err
+}
+
+func GetLike(username string, flashlightId string) (like Like, err error) {
+	query := `
+	{
+		"selector": {
+			"type": "Like",
+			"flashlight_id": "%s",
+			"username": "%s"
+		}
+	 }`
+	likeMap, err := flashlightDb.QueryJSON(fmt.Sprintf(query, flashlightId, username))
+	if len(likeMap) > 0 {
+		like, _ = map2Like(likeMap[0])
+	} else {
+		like.Username = ""
+	}
 	if err != nil {
-		fmt.Printf("[DeleteComment] error: %s", err)
+		printError(err)
+	}
+	return like, err
+}
+
+func DeleteLike(id string) (err error) {
+	err = flashlightDb.Delete(id)
+	if err != nil {
+		printError(err)
+	}
+	return err
+}
+
+func DeleteLikeByUserId(id string) (err error) {
+	query := `
+	{
+		"selector": {
+			"type": "Like",
+			"user_id": "%s"
+		}
+	 }`
+	likes, err := flashlightDb.QueryJSON(fmt.Sprintf(query, id))
+	if err != nil {
+		printError(err)
+		return err
+	}
+	for index := range likes {
+		err = DeleteLike(likes[index]["_id"].(string))
+	}
+	if err != nil {
+		printError(err)
+		
+	}
+	return err
+}
+
+/*func DeleteLikeByFlashlightId(id string) error {
+
+}*/
+
+func CountLikes(flashlightId string) (likeCount int, err error) {
+	query := `
+	{
+		"selector": {
+			"type": "Like",
+			"flashlight_id": "%s"
+		}
+	 }`
+	likeMap, err := flashlightDb.QueryJSON(fmt.Sprintf(query, flashlightId))
+
+	if err != nil {
+		printError(err)
+	}
+	flashlight, _ :=GetFlashlight(flashlightId)
+	flashlight.LikeAmount=len(likeMap)
+	var x []map[string]interface{}
+	flashlightMap, _ := flashlight2Map(flashlight)
+	x = append(x, flashlightMap)
+	flashlightDb.Update(x, nil)
+
+	return len(likeMap), err
+}
+
+/*func UpdateLikeCount(flashlightId string, likeCount int) (err error) {
+	flashlightDb.Get(flashlightId)
+}*/
+
+func DeleteComment(id string) (err error) {
+	err = flashlightDb.Delete(id)
+	if err != nil {
+		printError(err)
+	}
+	return err
+}
+
+func DeleteCommentByFlashlightId(id string) (err error) {
+	query := `
+	{
+		"selector": {
+			"type": "Comment",
+			"flashlight_id": "%s"
+		}
+	 }`
+
+	commentMaps, err := flashlightDb.QueryJSON(fmt.Sprintf(query, id))
+	if err != nil {
+		printError(err)
+	}
+	for index := range commentMaps {
+		_ = flashlightDb.Delete(commentMaps[index]["_id"].(string))
 	}
 	return err
 }
@@ -146,10 +276,10 @@ func GetAllFlashlights() (flashlights []Flashlight, err error) {
 
 }
 
-func (f Flashlight) Delete() error {
-	err := flashlightDb.Delete(f.ID)
+func Delete(id string) error {
+	err := flashlightDb.Delete(id)
 	if err != nil {
-		fmt.Printf("[Delete] error: %s", err)
+		printError(err)
 	}
 	return err
 }
@@ -182,4 +312,27 @@ func map2Comment(comment map[string]interface{}) (c Comment, err error) {
 	json.Unmarshal(flashlightJSON, &c)
 
 	return c, err
+}
+
+func like2Map(l Like) (like map[string]interface{}, err error) {
+	flashlightJSON, err := json.Marshal(l)
+	json.Unmarshal(flashlightJSON, &like)
+
+	return like, err
+}
+
+func map2Like(like map[string]interface{}) (l Like, err error) {
+	flashlightJSON, err := json.Marshal(like)
+	json.Unmarshal(flashlightJSON, &l)
+
+	return l, err
+}
+
+func printError(err error) {
+	pc, _, _, ok := runtime.Caller(1)
+	details := runtime.FuncForPC(pc)
+	if ok && details != nil {
+		result := strings.Split(details.Name(), ".")
+		fmt.Printf("[%s] error: %s\n", result[1], err)
+	}
 }

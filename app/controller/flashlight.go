@@ -58,26 +58,63 @@ func AddPost(w http.ResponseWriter, request *http.Request) {
 		session, _ := store.Get(request, "session")
 		username := session.Values["username"].(string)
 		caption := request.FormValue("caption")
-		timestamp := time.Now()
+		timestamp := time.Now().Format("02.01.2006 - 15:04")
 
 		flashlight := model.Flashlight{
 			Type:       "Flashlight",
 			FilePath:   imagePath,
 			Author:     username,
 			Timestamp:  timestamp,
-			LikeAmount: 1,
+			LikeAmount: 0,
 			Caption:    caption,
 		}
 		flashlight.Add()
-		Home(w, request)
+		http.Redirect(w, request, "/home", http.StatusFound)
 	}
 }
 
 func DeletePost(w http.ResponseWriter, request *http.Request) {
+	if request.Method == "POST" {
+		id := request.FormValue("id")
 
+		_ = model.Delete(id)
+		_ = model.DeleteCommentByFlashlightId(id)
+		http.Redirect(w, request, "/mypictures", http.StatusFound)
+	}
 }
 
 func LikePost(w http.ResponseWriter, request *http.Request) {
+
+	id := request.FormValue("fid")
+	session, _ := store.Get(request, "session")
+	username := session.Values["username"].(string)
+	var like model.Like
+
+
+		like = model.Like{
+			Type:         "Like",
+			FlashlightId: id,
+			Username:     username,
+		}
+		_ = model.AddLike(like)
+
+	_, _ = model.CountLikes(id)
+	http.Redirect(w, request, "/home", http.StatusFound)
+}
+
+func DislikePost(w http.ResponseWriter, request *http.Request) {
+
+	id := request.FormValue("fid")
+	session, _ := store.Get(request, "session")
+	username := session.Values["username"].(string)
+	var like model.Like
+
+
+		like, _ = model.GetLike(username, id)
+		_ = model.DeleteLike(like.ID)
+
+	_, _ = model.CountLikes(id)
+	http.Redirect(w, request, "/home", http.StatusFound)
 }
 
 func AddComment(w http.ResponseWriter, request *http.Request) {
@@ -85,7 +122,7 @@ func AddComment(w http.ResponseWriter, request *http.Request) {
 		session, _ := store.Get(request, "session")
 		username := session.Values["username"].(string)
 		commentText := request.FormValue("comment")
-		id := request.FormValue("test")
+		id := request.FormValue("fid")
 
 		comment := model.Comment{
 			Type:         "Comment",
@@ -94,7 +131,7 @@ func AddComment(w http.ResponseWriter, request *http.Request) {
 			FlashlightId: id,
 		}
 		model.AddComment(comment)
-		Home(w, request)
+		http.Redirect(w, request, "/home", http.StatusFound)
 	}
 }
 
@@ -122,6 +159,15 @@ func Home(writer http.ResponseWriter, request *http.Request) {
 	session, _ := store.Get(request, "session")
 	username := session.Values["username"].(string)
 	flashlights, _ := model.GetAllFlashlights()
+	for index := range flashlights{
+		flashlights[index].Comments, _ =flashlights[index].GetComments()
+		like, _ := model.GetLike(username, flashlights[index].ID)
+		if like.Username != "" {
+			flashlights[index].IsLiked=1
+		} else {
+			flashlights[index].IsLiked=0
+		}
+	}
 	data := struct {
 		Flashlights *[]model.Flashlight
 		Username    string

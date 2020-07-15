@@ -50,7 +50,7 @@ func AddUser(writer http.ResponseWriter, request *http.Request) {
 
 	user.Add()
 
-	tmpl.ExecuteTemplate(writer, "login.tmpl", nil)
+	http.Redirect(writer, request, "/login", http.StatusFound)
 }
 
 // Authentication handler

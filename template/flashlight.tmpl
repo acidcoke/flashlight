@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>A</title>
-    <link rel="shortcut icon" type="image/x-icon" href="./static/img/favicon.ico">
+    <title>Flashlight</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/static/img/favicon.ico">
 
     <link rel="stylesheet" href="/static/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </head>
 <body style="padding-top: 75px;">
     <nav class="navbar navbar-default fixed-top" style="background-color:  #f6b92b;">
         <div class="container justify-content-center">
             <div class="navbar-header">
-                <a class="navbar-brand" href="#">
-                    <img src="static/img/flashlight_logo_white.svg" alt="Logo" style="width:200px;">
+                <a class="navbar-brand" href=".">
+                    <img src="/static/img/flashlight_logo_white.svg" alt="Logo" style="width:200px;">
                 </a>
             </div>
         </div>
@@ -56,14 +56,18 @@
                         <li class="list-group-item">
                             {{if gt .LikeAmount 1}}
                                 <b>Gefällt {{.LikeAmount}} Leuten</b>
-                            {{else}}
-                                <b>Gefällt 1 Person</b>
+                            {{else if eq .LikeAmount 1}}
+                                <b>Gefällt Jemandem</b>
+                            {{else if eq .LikeAmount 0}}
+                                <b>Gefällt Keinem</b>
                             {{end}}
                             <p><br>{{.Caption}}
                             </p>
                         </li>
                         {{range .Comments}}
-                            <li class="list-group-item"><b>{{.Author}}</b>{{.Text}}</li>
+                            <li class="list-group-item">
+                                <b style="margin-right: 2%">{{.Author}}</b>{{.Text}}
+                            </li>
                         {{end}}
                     </ul>
                 </div>

@@ -19,7 +19,8 @@ func main() {
 	http.HandleFunc("/authenticate-user", controller.AuthenticateUser)
 	http.HandleFunc("/add-post", controller.Auth(controller.AddPost))
 	http.HandleFunc("/like-post", controller.Auth(controller.LikePost))
-	http.HandleFunc("/delete-post/", controller.Auth(controller.DeletePost))
+	http.HandleFunc("/dislike-post", controller.Auth(controller.DislikePost))
+	http.HandleFunc("/delete-post", controller.Auth(controller.DeletePost))
 	http.HandleFunc("/add-comment", controller.Auth(controller.AddComment))
 	http.HandleFunc("/delete-comment", controller.Auth(controller.DeleteComment))
 	http.HandleFunc("/logout", controller.Logout)
@@ -29,5 +30,5 @@ func main() {
 	http.Handle("/files/", http.StripPrefix("/files", http.FileServer(http.Dir("."))))
 	http.Handle("/data/", http.StripPrefix("/data/", http.FileServer(http.Dir("data"))))
 
-	http.ListenAndServe(":80", nil)
+	http.ListenAndServe(":8080", nil)
 }
