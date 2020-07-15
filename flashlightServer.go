@@ -30,5 +30,5 @@ func main() {
 	http.Handle("/files/", http.StripPrefix("/files", http.FileServer(http.Dir("."))))
 	http.Handle("/data/", http.StripPrefix("/data/", http.FileServer(http.Dir("data"))))
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":80", nil)
 }
