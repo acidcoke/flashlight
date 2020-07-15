@@ -30,41 +30,46 @@ func GetUserByUsername(username string) (user User, err error) {
 	if err != nil {
 		return user, err
 	}
-
-	user, err = map2User(u[0])
-	if err != nil {
-		return User{}, err
+	if len(u) != 0 {
+		user, err = map2User(u[0])
+		if err != nil {
+			return User{}, err
+		}
+		return user, nil
 	}
-
-	return user, nil
+	return user, fmt.Errorf("Fehler")
 
 }
 
 func (user User) Add() (err error) {
 	// Check wether username already exists
 	// Todo...
+	existinguser, _ := GetUserByUsername(user.Username)
+	if existinguser.Id == "" {
+		// Hash password
+		hashedPwd, err := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
+		b64HashedPwd := base64.StdEncoding.EncodeToString(hashedPwd)
 
-	// Hash password
-	hashedPwd, err := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
-	b64HashedPwd := base64.StdEncoding.EncodeToString(hashedPwd)
+		user.Password = b64HashedPwd
+		user.Type = "User"
 
-	user.Password = b64HashedPwd
-	user.Type = "User"
+		// Convert user struct to map[string]interface as required by Save() method
+		u, err := user2Map(user)
 
-	// Convert user struct to map[string]interface as required by Save() method
-	u, err := user2Map(user)
+		// Delete _id and _rev from map, otherwise DB access will be denied (unauthorized)
+		delete(u, "_id")
+		delete(u, "_rev")
 
-	// Delete _id and _rev from map, otherwise DB access will be denied (unauthorized)
-	delete(u, "_id")
-	delete(u, "_rev")
+		// Add user to DB
+		_, _, err = flashlightDb.Save(u, nil)
 
-	// Add user to DB
-	_, _, err = flashlightDb.Save(u, nil)
-
-	if err != nil {
-		fmt.Printf("[Add] error: %s", err)
+		if err != nil {
+			fmt.Printf("[Add] error: %s", err)
+		}
+	} else {
+		err := fmt.Errorf("user already exists")
+		fmt.Println(err.Error())
 	}
-
 	return err
 }
 

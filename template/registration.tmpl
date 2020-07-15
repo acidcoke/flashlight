@@ -23,7 +23,6 @@
         <form action="/add-user" method="POST">
             <div class="row">
                 <div class="col"><h6 class="text-center">Hier kannst du ein neues Konto erstellen</h6></div>
-
             </div>
             <div class="row">
                 <div class="col">
@@ -42,7 +41,7 @@
             <div class="row">
                 <div class="col">
                     <div class="form-group">
-                        <input type="password" class="form-control" placeholder="Passwort wiederholen" id="password-repeat">
+                        <input type="password" class="form-control" placeholder="Passwort wiederholen" id="password-repeat" name="password-repeat">
                     </div>
                 </div>
             </div>
@@ -54,6 +53,20 @@
                 </div>
             </div>
         </form>
+                {{if ge .Error 1}}
+                    <div class="row justify-content-center">
+                        <div class="col-9">
+                            <label class="badge badge-danger">
+                                {{if eq .Error 1}}
+                                    Der Benutzername ist bereits vergeben
+                                {{else if eq .Error 2}}
+                                    Die Passwörter stimmen nicht überein
+                                {{end}}
+                            </label>
+                        </div>
+                    </div>
+                {{end}}
+
     </div>
 </body>
 </html>

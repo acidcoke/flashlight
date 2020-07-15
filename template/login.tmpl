@@ -46,6 +46,17 @@
                     </a>
                 </div>
             </div>
+            {{if ge .Error 1}}
+                <div class="row justify-content-center">
+                    <div class="col-9">
+                        <label class="badge badge-danger">
+                            {{if eq .Error 1}}
+                                Der Benutzername oder das Passwort ist falsch
+                            {{end}}
+                        </label>
+                    </div>
+                </div>
+            {{end}}
         </form>
     </div>
 </body>

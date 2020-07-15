@@ -25,7 +25,13 @@ func AuthenticateUser(writer http.ResponseWriter, request *http.Request) {
 		session.Save(request, writer)
 		http.Redirect(writer, request, "/home", http.StatusFound)
 	} else {
-		tmpl.ExecuteTemplate(writer, "login.tmpl", "nil")
+		data := struct {
+			Error int
+		}{
+			1,
+		}
+		tmpl.ExecuteTemplate(writer, "login.tmpl", data)
+		http.Redirect(writer, request, "/login", http.StatusFound)
 	}
 }
 
@@ -43,14 +49,34 @@ func Logout(writer http.ResponseWriter, request *http.Request) {
 func AddUser(writer http.ResponseWriter, request *http.Request) {
 	username := request.FormValue("username")
 	password := request.FormValue("password")
+	chkpwd := request.FormValue("password-repeat")
+	user := model.User{
+		Username: username,
+		Password: password,
+	}
+	if password != chkpwd {
+		data := struct {
+			Error int
+		}{
+			2,
+		}
+		tmpl.ExecuteTemplate(writer, "registration.tmpl", data)
+		http.Redirect(writer, request, "/registration", http.StatusFound)
+	} else {
+		err := user.Add()
+		if err != nil {
+			data := struct {
+				Error int
+			}{
+				1,
+			}
+			tmpl.ExecuteTemplate(writer, "registration.tmpl", data)
+			http.Redirect(writer, request, "/registration", http.StatusFound)
+		} else {
+			http.Redirect(writer, request, "/login", http.StatusFound)
+		}
 
-	user := model.User{}
-	user.Username = username
-	user.Password = password
-
-	user.Add()
-
-	http.Redirect(writer, request, "/login", http.StatusFound)
+	}
 }
 
 // Authentication handler
