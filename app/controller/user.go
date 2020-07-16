@@ -44,6 +44,7 @@ func Logout(writer http.ResponseWriter, request *http.Request) {
 	session.Save(request, writer)
 
 	tmpl.ExecuteTemplate(writer, "flashlight.tmpl", nil)
+	http.Redirect(writer, request, "/index", http.StatusFound)
 }
 
 func AddUser(writer http.ResponseWriter, request *http.Request) {
